@@ -11,6 +11,11 @@ $ export AWS_DEFAULT_REGION="eu-central-1"
 
 $ packer validate ignite.json
 $ packer build ignite.json
+
+...
+==> Builds finished. The artifacts of successful builds are:
+--> amazon-ebs: AMIs were created:
+eu-central-1: ami-001ff10aa7bffe840
 ```
 
 ## Installation

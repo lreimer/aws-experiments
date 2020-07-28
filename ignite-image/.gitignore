@@ -3,3 +3,5 @@ builds/cache/*
 builds/providers/*
 builds/sandbox/*
 !.gitkeep
+
+apache-ignite-*/
