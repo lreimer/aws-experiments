@@ -15,5 +15,5 @@ $ packer build solr.json
 ...
 ==> Builds finished. The artifacts of successful builds are:
 --> amazon-ebs: AMIs were created:
-eu-central-1: ami-024aca5a1e273915b
+eu-central-1: ami-02cc9574c2f3bd879
 ```
