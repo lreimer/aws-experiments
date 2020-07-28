@@ -53,6 +53,11 @@
       "destination": "/home/ec2-user/"
     },
     {
+      "type": "file",
+      "source": "files/zoo.cfg",
+      "destination": "/tmp/"
+    },
+    {
       "type": "shell",
       "inline_shebang": "/bin/bash -e",
       "inline": [
@@ -68,7 +73,10 @@
         "sudo curl https://ftp.halifax.rwth-aachen.de/apache/zookeeper/zookeeper-{{user `zookeeper_version`}}/apache-zookeeper-{{user `zookeeper_version`}}-bin.tar.gz -o /tmp/apache-zookeeper-{{user `zookeeper_version`}}-bin.tar.gz",
         "sudo tar -xzf /tmp/apache-zookeeper-{{user `zookeeper_version`}}-bin.tar.gz -C /home/zookeeper/",
         "sudo mv /home/zookeeper/apache-zookeeper-{{user `zookeeper_version`}}-bin/ /home/zookeeper/apache-zookeeper-{{user `zookeeper_version`}}/",
+        "sudo cp /tmp/zoo.cfg /home/zookeeper/apache-zookeeper-{{user `zookeeper_version`}}/conf/",
         "sudo chown -R zookeeper:zookeeper /home/zookeeper/apache-zookeeper-{{user `zookeeper_version`}}/",
+        "sudo mkdir -p /var/lib/zookeeper",
+        "sudo chown -R zookeeper:zookeeper /var/lib/zookeeper",
         "echo === All Done ==="
       ]
     }
