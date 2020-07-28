@@ -1,0 +1,88 @@
+{
+  "variables": {
+    "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
+    "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
+    "aws_region": "{{env `AWS_DEFAULT_REGION`}}",
+    "aws_ssh_username": "ec2-user",
+    "aws_ami_name": "apache-ignite",
+    "aws_instance_type": "t2.micro",
+    "ignite_version": "2.8.1"
+  },
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "access_key": "{{user `aws_access_key`}}",
+      "secret_key": "{{user `aws_secret_key`}}",
+      "region": "{{user `aws_region`}}",
+      "instance_type": "{{user `aws_instance_type`}}",
+      "ssh_username": "{{user `aws_ssh_username`}}",
+      "associate_public_ip_address": true,
+      "ami_name": "{{user `aws_ami_name`}}-{{user `ignite_version`}}-{{timestamp}}",
+      "source_ami_filter": {
+        "filters": {
+          "architecture": "x86_64",
+          "name": "amzn2-ami-*",
+          "root-device-type": "ebs",
+          "virtualization-type": "hvm"
+        },
+        "owners": [
+          "137112412989"
+        ],
+        "most_recent": true
+      },
+      "ami_block_device_mappings": [
+        {
+          "device_name": "/dev/xvda",
+          "volume_size": 8,
+          "delete_on_termination": true
+        }
+      ],
+      "launch_block_device_mappings": [
+        {
+          "device_name": "/dev/xvda",
+          "volume_size": 8,
+          "delete_on_termination": true
+        }
+      ]
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "file",
+      "source": "files/VERSION",
+      "destination": "/home/ec2-user/"
+    },
+    {
+      "type": "file",
+      "source": "files/ignite.repo",
+      "destination": "/tmp/"
+    },
+    {
+      "type": "shell",
+      "inline_shebang": "/bin/bash -e",
+      "inline": [
+        "unset HISTFILE",
+        "history -cw",
+        "echo === Waiting for Cloud-Init ===",
+        "timeout 120 /bin/bash -c 'until stat /var/lib/cloud/instance/boot-finished &>/dev/null; do echo waiting...; sleep 6; done'",
+        "echo === Install Packages ===",
+        "sudo df -h",
+        "sudo yum -y install java-11-amazon-corretto-headless curl unzip",
+        "java -version",
+        "sudo adduser ignite",
+        "sudo curl https://downloads.apache.org/ignite/2.8.1/apache-ignite-2.8.1-bin.zip -o /tmp/apache-ignite-2.8.1-bin.zip",
+        "sudo unzip /tmp/apache-ignite-2.8.1-bin.zip -d /home/ignite/",
+        "sudo mv /home/ignite/apache-ignite-2.8.1-bin/ /home/ignite/apache-ignite-2.8.1/",
+        "sudo rm -rf /home/ignite/apache-ignite-2.8.1/examples/",
+        "sudo rm -rf /home/ignite/apache-ignite-2.8.1/benchmarks/",
+        "sudo rm -rf /home/ignite/apache-ignite-2.8.1/docs/",
+        "sudo rm -rf /home/ignite/apache-ignite-2.8.1/platforms/",
+        "sudo mv /home/ignite/apache-ignite-2.8.1/libs/optional/ignite-rest-http /home/ignite/apache-ignite-2.8.1/libs",
+        "sudo mv /home/ignite/apache-ignite-2.8.1/libs/optional/ignite-aws /home/ignite/apache-ignite-2.8.1/libs",
+        "sudo mv /home/ignite/apache-ignite-2.8.1/libs/optional/ignite-zookeeper /home/ignite/apache-ignite-2.8.1/libs",
+        "sudo chown -R ignite:ignite /home/ignite/apache-ignite-2.8.1/",
+        "echo === All Done ==="
+      ]
+    }
+  ]
+}
