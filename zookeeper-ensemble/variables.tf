@@ -17,3 +17,9 @@ variable "key_name" {
   description = "Desired name of AWS key pair"
   default = "zookeeper"
 }
+
+variable "size" {
+  type = number
+  description = "The Zookeeper ensemble size"
+  default = "3"
+}

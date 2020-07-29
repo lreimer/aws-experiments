@@ -67,7 +67,7 @@ data "aws_ami" "zookeeper" {
 }
 
 data "template_file" "user_data" {
-  count = 3
+  count = var.size
   template = file("user-data.tpl")
   vars = {
     n = count.index+1
@@ -75,7 +75,7 @@ data "template_file" "user_data" {
 }
 
 resource "aws_instance" "zk-ensemble" {
-  count = 3
+  count = var.size
   ami = data.aws_ami.zookeeper.id
   instance_type = "t2.micro"
   associate_public_ip_address = true
@@ -91,4 +91,27 @@ resource "aws_instance" "zk-ensemble" {
     Service   = "Zookeeper"
     Environment = "DEV"
   }
+}
+
+locals {
+  domains = [
+      for i in range(var.size ) : "zookeeper-${i}.zookeeper.cloud"
+  ]
+}
+
+resource "aws_route53_zone" "zookeeper" {
+  name = "zookeeper.cloud"
+
+  vpc {
+    vpc_id = data.aws_vpc.default.id
+  }
+}
+
+resource "aws_route53_record" "zk-dns" {
+  count = var.size
+  zone_id = aws_route53_zone.zookeeper.id
+  name = local.domains[count.index]
+  type = "A"
+  ttl = "300"
+  records = [aws_instance.zk-ensemble[count.index].private_ip]
 }
