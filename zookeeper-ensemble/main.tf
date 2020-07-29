@@ -66,24 +66,28 @@ data "aws_ami" "zookeeper" {
   }
 }
 
-module "zk-ensemble" {
-  source  = "terraform-aws-modules/ec2-instance/aws"
-  version = "2.15.0"
+data "template_file" "user_data" {
+  count = 3
+  template = file("user-data.tpl")
+  vars = {
+    n = count.index+1
+  }
+}
 
-  name = "zookeeper"
-  use_num_suffix = true
-
+resource "aws_instance" "zk-ensemble" {
+  count = 3
   ami = data.aws_ami.zookeeper.id
-  instance_count = 3
   instance_type = "t2.micro"
-
-  key_name = var.key_name
   associate_public_ip_address = true
+  key_name = var.key_name
 
+  subnet_id = tolist(data.aws_subnet_ids.default.ids)[count.index]
   vpc_security_group_ids = [module.security-group_zookeeper.this_security_group_id, aws_security_group.ssh.id]
-  subnet_ids = data.aws_subnet_ids.default.ids
+
+  user_data = data.template_file.user_data[count.index].rendered
 
   tags = {
+    Name = "zookeeper-${count.index+1}"
     Service   = "Zookeeper"
     Environment = "DEV"
   }

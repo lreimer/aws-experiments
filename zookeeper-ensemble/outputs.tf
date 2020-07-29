@@ -1,3 +1,3 @@
 output "zookeeper_addresses" {
-  value = "${module.zk-ensemble.public_ip}"
+  value = "${aws_instance.zk-ensemble.*.public_ip}"
 }
