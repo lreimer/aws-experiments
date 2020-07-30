@@ -36,9 +36,9 @@ write_files:
             <property name="discoverySpi">
                 <bean class="org.apache.ignite.spi.discovery.zk.ZookeeperDiscoverySpi">
                     <property name="zkConnectionString" value="zookeeper-0.zookeeper.cloud,zookeeper-1.zookeeper.cloud,zookeeper-2.zookeeper.cloud"/>
-                    <property name="sessionTimeout" value="30000"/>
+                    <property name="sessionTimeout" value="60000"/>
                     <property name="zkRootPath" value="/ignite"/>
-                    <property name="joinTimeout" value="10000"/>
+                    <property name="joinTimeout" value="30000"/>
                 </bean>
             </property>
         </bean>
