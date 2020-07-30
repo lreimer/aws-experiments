@@ -70,6 +70,11 @@
         "sudo rm -rf /home/solr/solr-{{user `solr_version`}}/docs/",
         "sudo rm -rf /home/solr/solr-{{user `solr_version`}}/examples/",
         "sudo chown -R solr:solr /home/solr/solr-{{user `solr_version`}}/",
+        "echo \"solr       soft    nproc     unlimited\" | sudo tee -a /etc/security/limits.d/20-nproc.conf",
+        "echo \"solr       soft    nproc     unlimited\" | sudo tee -a /etc/security/limits.conf",
+        "echo \"solr       hard    nproc     unlimited\" | sudo tee -a /etc/security/limits.conf",
+        "echo \"solr       soft    nofile    unlimited\" | sudo tee -a /etc/security/limits.conf",
+        "echo \"solr       hard    nofile    unlimited\" | sudo tee -a /etc/security/limits.conf",
         "echo === All Done ==="
       ]
     }
