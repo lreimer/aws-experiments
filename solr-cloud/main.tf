@@ -70,7 +70,7 @@ data "template_file" "user_data" {
   count = var.size
   template = file("user-data.tpl")
   vars = {
-    n = count.index+1
+    n = count.index
   }
 }
 
