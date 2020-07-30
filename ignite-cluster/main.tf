@@ -35,17 +35,67 @@ resource "aws_security_group" "ssh" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  tags = {
+    Name = "Ignite SSH"
+  }
 }
 
-module "solr_security_group" {
-  source  = "terraform-aws-modules/security-group/aws//modules/solr"
-  version = "~> 3.0"
-
-  name   = "Solr"
+resource "aws_security_group" "ignite" {
+  name   = "Ignite"
   vpc_id = data.aws_vpc.default.id
 
-  ingress_cidr_blocks = ["0.0.0.0/0"]
-  egress_cidr_blocks  = ["0.0.0.0/0"]
+  ingress {
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    from_port   = 49128
+    to_port     = 49128
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    from_port   = 11211
+    to_port     = 11211
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    from_port   = 48100
+    to_port     = 48200
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    from_port   = 47500
+    to_port     = 47600
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    from_port   = 47100
+    to_port     = 47200
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    from_port   = 31100
+    to_port     = 31200
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  tags = {
+    Name = "Ignite"
+  }
 }
 
 resource "aws_key_pair" "auth" {
@@ -82,7 +132,7 @@ resource "aws_instance" "ignite" {
   key_name                    = var.key_name
 
   subnet_id              = tolist(data.aws_subnet_ids.default.ids)[count.index]
-  vpc_security_group_ids = [module.solr_security_group.this_security_group_id, aws_security_group.ssh.id]
+  vpc_security_group_ids = [aws_security_group.ignite.id, aws_security_group.ssh.id]
 
   user_data = data.template_file.user_data[count.index].rendered
 
