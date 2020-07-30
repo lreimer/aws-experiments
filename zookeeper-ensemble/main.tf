@@ -17,7 +17,7 @@ data "aws_subnet_ids" "default" {
 }
 
 resource "aws_security_group" "ssh" {
-  name        = "SSH"
+  name        = "Zookeeper SSH"
   vpc_id      = data.aws_vpc.default.id
 
   # SSH access from anywhere
