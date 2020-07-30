@@ -35,6 +35,10 @@ resource "aws_security_group" "ssh" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  tags = {
+    Name = "Zookeeper Solr"
+  }
 }
 
 module "security-group_zookeeper" {
@@ -46,6 +50,10 @@ module "security-group_zookeeper" {
 
   ingress_cidr_blocks = ["0.0.0.0/0"]
   egress_cidr_blocks = ["0.0.0.0/0"]
+
+  tags = {
+    Name = "Zookeeper"
+  }
 }
 
 resource "aws_key_pair" "auth" {

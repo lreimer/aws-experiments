@@ -35,6 +35,9 @@ resource "aws_security_group" "ssh" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+  tags = {
+    Name = "Solr SSH"
+  }
 }
 
 module "solr_security_group" {
@@ -46,6 +49,10 @@ module "solr_security_group" {
 
   ingress_cidr_blocks = ["0.0.0.0/0"]
   egress_cidr_blocks  = ["0.0.0.0/0"]
+  
+  tags = {
+    Name = "Solr"
+  }
 }
 
 resource "aws_key_pair" "auth" {
