@@ -20,7 +20,7 @@ variable "az_count" {
 
 variable "app_image" {
   description = "Docker image to run in the ECS cluster"
-  default = "lreimer/jakartaee8-java11:latest"
+  default = "lreimer/jakartaee8-java11:d412e89362d3ee78e3e70fc29caf4689a84caa36c9652910a301654f8c7472fa"
 }
 
 variable "app_port" {
