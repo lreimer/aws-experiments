@@ -21,4 +21,11 @@ With Terraform we use the Beanstalk modules provided by CloudPosse to deploy the
 $ terraform init
 $ terraform plan
 $ terraform apply
+
+$ aws --region eu-central-1 elasticbeanstalk update-environment --environment-name $(terraform output env_name) --version-label $(terraform output app_version)
 ```
+
+## References
+- https://medium.com/@jackmahoneynz/deploying-applications-to-elasticbeanstalk-with-terraform-6c0694558ccf
+- https://github.com/cloudposse/terraform-aws-elastic-beanstalk-application
+- https://github.com/cloudposse/terraform-aws-elastic-beanstalk-environment
