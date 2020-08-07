@@ -45,11 +45,16 @@ module "elastic_beanstalk_environment" {
 
   vpc_id              = data.aws_vpc.default.id
   region              = var.aws_region
+  availability_zone_selector         = "Any 3"
+
+  instance_type           = "t3.small"
 
   loadbalancer_subnets = data.aws_subnet_ids.default.ids 
   application_subnets = data.aws_subnet_ids.default.ids
 
   solution_stack_name = "64bit Amazon Linux 2018.03 v2.15.2 running Docker 19.03.6-ce"
+
+  wait_for_ready_timeout = "5m"
 }
 
 resource "aws_elastic_beanstalk_application_version" "default" {
