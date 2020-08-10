@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: jakartaee8-java11
+  labels:
+    app: jakartaee8-java11
+spec:
+  # not support when pods run on Fargate
+  type: NodePort
+  ports:
+    - port: 8080
+      name: http
+  selector:
+    app: jakartaee8-java11
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jakartaee8-java11
+  labels:
+    app: jakartaee8-java11
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: jakartaee8-java11
+  template:
+    metadata:
+      labels:
+        app: jakartaee8-java11
+    spec:
+      containers:
+        - name: jakartaee8-java11
+          image: lreimer/jakartaee8-java11:d412e89362d3ee78e3e70fc29caf4689a84caa36c9652910a301654f8c7472fa
+          ports:
+            - containerPort: 8080
+          resources:
+            limits:
+              cpu: "1"
+              memory: "2048Mi"
+            requests:
+              cpu: "1"
+              memory: "2048Mi"
+---
+  apiVersion: extensions/v1beta1
+  kind: Ingress
+  metadata:
+    name: "jakartaee8-java11-ingress"
+    annotations:
+      kubernetes.io/ingress.class: alb
+      # Note: The ALB Ingress Controller works only in the IP mode on Amazon EKS for Fargate.
+      # https://kubernetes-sigs.github.io/aws-alb-ingress-controller/guide/ingress/annotation/
+      alb.ingress.kubernetes.io/target-type: ip
+      alb.ingress.kubernetes.io/scheme: internet-facing
+    labels:
+      app: jakartaee8-java11
+  spec:
+    rules:
+      # host: jakartaee8-java11.cloud
+      - http:
+          paths:
+            - path: /api/*
+              backend:
+                serviceName: jakartaee8-java11
+                servicePort: http
+  
