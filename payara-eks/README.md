@@ -33,7 +33,7 @@ $ kubectl apply -f alb-ingress-controller.yaml
 # we need to insert the VPC ID into the ingress controller definition
 $ aws ec2 describe-vpcs
 $ kubectl edit deployment.apps/alb-ingress-controller -n kube-system
-# insert into args - --aws-vpc-id=vpc-069cf6e5990517074
+# change aws-vpc-id args - --aws-vpc-id=vpc-069cf6e5990517074
 
 $ kubectl apply -f microservice.yaml
 $ kubectl get pods,deployments,ingresses
