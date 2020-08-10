@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: "jakartaee8-java11-ingress"
+  annotations:
+    kubernetes.io/ingress.class: alb
+    # Note: The ALB Ingress Controller works only in the IP mode on Amazon EKS for Fargate.
+    # https://kubernetes-sigs.github.io/aws-alb-ingress-controller/guide/ingress/annotation/
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/scheme: internet-facing
+  labels:
+    app: jakartaee8-java11
+spec:
+  rules:
+    # host: jakartaee8-java11.cloud
+    - http:
+        paths:
+          - path: /api/*
+            backend:
+              serviceName: jakartaee8-java11
+              servicePort: http

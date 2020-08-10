@@ -36,8 +36,8 @@ $ kubectl edit deployment.apps/alb-ingress-controller -n kube-system
 # change aws-vpc-id args - --aws-vpc-id=vpc-069cf6e5990517074
 
 $ kubectl apply -f microservice.yaml
+$ kubectl apply -f microservice-alb-ingress.yaml
 $ kubectl get pods,deployments,ingresses
-
 ```
 
 ## Using Terraform
