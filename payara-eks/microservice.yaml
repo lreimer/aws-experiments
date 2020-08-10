@@ -28,6 +28,9 @@ spec:
     metadata:
       labels:
         app: jakartaee8-java11
+
+        # use this in mixed mode to schedule on Fargate for default namespace
+        # scheduler: fargate
     spec:
       containers:
         - name: jakartaee8-java11

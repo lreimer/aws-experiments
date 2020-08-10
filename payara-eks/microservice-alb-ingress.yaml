@@ -15,7 +15,7 @@ spec:
     # host: jakartaee8-java11.cloud
     - http:
         paths:
-          - path: /api/*
+          - path: /*
             backend:
               serviceName: jakartaee8-java11
               servicePort: http
