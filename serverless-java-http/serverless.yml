@@ -1,0 +1,26 @@
+service: serverless-java-http
+
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime: java11
+  stage: ${opt:stage, 'dev'} # Set the default stage used. Default is dev
+  region: ${opt:region, 'eu-central-1'} # Overwrite the default region used. Default is us-east-1
+  versionFunctions: false # optional, default is true
+  
+package:
+  artifact: build/distributions/serverless-java-http.zip
+
+functions:
+  serverlessJavaHttp:
+    handler: cloud.nativ.serverless.Handler
+    
+    memorySize: 512 # optional, in MB, default is 1024
+    timeout: 10 # optional, in seconds, default is 6
+    provisionedConcurrency: 3 # optional, Count of provisioned lambda instances
+
+    events:
+      - http:
+          path: serverless-java-http
+          method: get

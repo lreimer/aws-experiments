@@ -1,0 +1,11 @@
+*.class
+.gradle
+/build/
+/bin/
+/.settings/
+.project
+.classpath
+target
+
+# Serverless directories
+.serverless
