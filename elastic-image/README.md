@@ -15,5 +15,5 @@ $ packer build elasticsearch.json
 ...
 ==> Builds finished. The artifacts of successful builds are:
 --> amazon-ebs: AMIs were created:
-eu-central-1: ami-02cc9574c2f3bd879
+eu-central-1: ami-0a4e6a1bc7f31dbca
 ```
