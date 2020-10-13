@@ -1,0 +1,80 @@
+{
+  "variables": {
+    "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
+    "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
+    "aws_region": "{{env `AWS_DEFAULT_REGION`}}",
+    "aws_ssh_username": "ec2-user",
+    "aws_ami_name": "elasticsearch",
+    "aws_instance_type": "t2.micro",
+    "elastic_version": "7.9.2"
+  },
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "access_key": "{{user `aws_access_key`}}",
+      "secret_key": "{{user `aws_secret_key`}}",
+      "region": "{{user `aws_region`}}",
+      "instance_type": "{{user `aws_instance_type`}}",
+      "ssh_username": "{{user `aws_ssh_username`}}",
+      "associate_public_ip_address": true,
+      "ami_name": "{{user `aws_ami_name`}}-{{user `elastic_version`}}-{{timestamp}}",
+      "source_ami_filter": {
+        "filters": {
+          "architecture": "x86_64",
+          "name": "amzn2-ami-*",
+          "root-device-type": "ebs",
+          "virtualization-type": "hvm"
+        },
+        "owners": [
+          "137112412989"
+        ],
+        "most_recent": true
+      },
+      "ami_block_device_mappings": [
+        {
+          "device_name": "/dev/xvda",
+          "volume_size": 8,
+          "delete_on_termination": true
+        }
+      ],
+      "launch_block_device_mappings": [
+        {
+          "device_name": "/dev/xvda",
+          "volume_size": 8,
+          "delete_on_termination": true
+        }
+      ]
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "file",
+      "source": "files/VERSION",
+      "destination": "/home/ec2-user/"
+    },
+    {
+      "type": "shell",
+      "inline_shebang": "/bin/bash -e",
+      "inline": [
+        "unset HISTFILE",
+        "history -cw",
+        "echo === Waiting for Cloud-Init ===",
+        "timeout 120 /bin/bash -c 'until stat /var/lib/cloud/instance/boot-finished &>/dev/null; do echo waiting...; sleep 6; done'",
+        "echo === Install Packages ===",
+        "sudo df -h",
+        "sudo yum -y curl",
+        "sudo adduser elastic",
+        "sudo curl https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-{{user `elastic_version`}}-linux-x86_64.tar.gz -o /tmp/elasticsearch-{{user `elastic_version`}}-linux-x86_64.tar.gz",
+        "sudo tar -xzf /tmp/elasticsearch-{{user `elastic_version`}}-linux-x86_64.tar.gz -C /home/elastic/",
+        "sudo /home/elastic/elasticsearch-{{user `elastic_version`}}/bin/elasticsearch-plugin install discovery-ec2",
+        "sudo chown -R elastic:elastic /home/elastic/elasticsearch-{{user `elastic_version`}}/",        
+        "echo \"elastic       soft    nproc     unlimited\" | sudo tee -a /etc/security/limits.d/20-nproc.conf",
+        "echo \"elastic       soft    nproc     unlimited\" | sudo tee -a /etc/security/limits.conf",
+        "echo \"elastic       hard    nproc     unlimited\" | sudo tee -a /etc/security/limits.conf",
+        "echo \"elastic       soft    nofile    unlimited\" | sudo tee -a /etc/security/limits.conf",
+        "echo \"elastic       hard    nofile    unlimited\" | sudo tee -a /etc/security/limits.conf",
+        "echo === All Done ==="
+      ]
+    }
+  ]
+}

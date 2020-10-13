@@ -1,0 +1,8 @@
+# Packer
+builds/cache/*
+builds/providers/*
+builds/sandbox/*
+!.gitkeep
+
+elasticsearch-*/
+elasticsearch-*.tar.gz
