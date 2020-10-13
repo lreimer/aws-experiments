@@ -1,0 +1,32 @@
+service: serverless-quarkus
+
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  stage: ${opt:stage, 'dev'} # Set the default stage used. Default is dev
+  region: ${opt:region, 'eu-central-1'} # Overwrite the default region used. Default is us-east-1
+  versionFunctions: false # optional, default is true
+  
+package:
+  artifact: build/function.zip
+
+functions:
+  serverlessQuarkus:
+    # runtime: provided for GraalVM or java11 for JVM
+
+    # runtime: java11
+    # handler: io.quarkus.amazon.lambda.runtime.QuarkusStreamHandler
+    
+    runtime: provided
+    environment:
+      DISABLE_SIGNAL_HANDLERS: true
+
+    memorySize: 512 # optional, in MB, default is 1024
+    timeout: 15 # optional, in seconds, default is 6
+    provisionedConcurrency: 3 # optional, Count of provisioned lambda instances
+
+    events:
+      - http:
+          path: serverless-quarkus
+          method: get

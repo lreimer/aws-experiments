@@ -2,6 +2,8 @@
 
 Simple Lambda function in Java 11 using the Serverless Framework to deploy.
 
+https://docs.aws.amazon.com/lambda/latest/dg/lambda-java.html
+
 ## Build
 
 ```bash
