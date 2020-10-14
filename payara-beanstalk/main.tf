@@ -27,39 +27,37 @@ resource "aws_s3_bucket_object" "app_item" {
   source = "Dockerrun.aws.json"
 }
 
-module "elastic_beanstalk_application" {
-  source = "git::https://github.com/cloudposse/terraform-aws-elastic-beanstalk-application.git?ref=master"
-
-  namespace = var.namespace
-  stage     = var.environment
-  name      = var.app_name
+resource "aws_elastic_beanstalk_application" "default" {
+  name        = "Payara Beanstalk"
+  description = "Payara Beanstalk application created by Terraform"
 }
 
-module "elastic_beanstalk_environment" {
-  source = "git::https://github.com/cloudposse/terraform-aws-elastic-beanstalk-environment.git?ref=master"
+resource "aws_elastic_beanstalk_environment" "default" {
+  name                = "payara-beanstalk-${var.environment}"
+  description         = "Payara Beanstalk environment created by Terraform"
 
-  namespace                          = var.namespace
-  stage                              = var.environment
-  name                               = var.app_name
-  elastic_beanstalk_application_name = module.elastic_beanstalk_application.elastic_beanstalk_application_name
+  application         = aws_elastic_beanstalk_application.default.id
+  solution_stack_name = "64bit Amazon Linux 2018.03 v2.15.4 running Docker 19.03.6-ce"
 
-  vpc_id              = data.aws_vpc.default.id
-  region              = var.aws_region
-  availability_zone_selector         = "Any 3"
+  setting {
+    namespace = "aws:autoscaling:launchconfiguration"
+    name      = "IamInstanceProfile"
+    value     = "aws-elasticbeanstalk-ec2-role"
+  }
 
-  instance_type           = "t3.small"
+  setting {
+    namespace = "aws:ec2:instances"
+    name      = "InstanceTypes"
+    value     = "t2.micro,t3.micro"
+  }
 
-  loadbalancer_subnets = data.aws_subnet_ids.default.ids 
-  application_subnets = data.aws_subnet_ids.default.ids
-
-  solution_stack_name = "64bit Amazon Linux 2018.03 v2.15.2 running Docker 19.03.6-ce"
-
-  wait_for_ready_timeout = "5m"
 }
 
 resource "aws_elastic_beanstalk_application_version" "default" {
   name        = "${var.namespace}-${var.environment}-${uuid()}"
-  application = module.elastic_beanstalk_application.elastic_beanstalk_application_name
+  description = "Payara Beanstalk application version created by Terraform"
+
+  application = aws_elastic_beanstalk_application.default.name
   bucket      = aws_s3_bucket.app_bucket.id
   key         = aws_s3_bucket_object.app_item.id
 }
