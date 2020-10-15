@@ -1,0 +1,28 @@
+service: serverless-typescript
+
+frameworkVersion: ">=1.83.0 <2.0.0"
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: ${opt:stage, 'dev'} # Set the default stage used. Default is dev
+  region: ${opt:region, 'eu-central-1'} # Overwrite the default region used. Default is us-east-1
+  versionFunctions: false # optional, default is true
+  endpointType: regional
+
+functions:
+  serverlessTypescript:
+    handler: handler.index
+
+    memorySize: 512 # optional, in MB, default is 1024
+    timeout: 10 # optional, in seconds, default is 6
+    provisionedConcurrency: 3 # optional, Count of provisioned lambda instances
+
+    events:
+      - http:
+          path: serverless-typescript
+          method: get
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-offline
