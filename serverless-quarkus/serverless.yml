@@ -7,6 +7,7 @@ provider:
   stage: ${opt:stage, 'dev'} # Set the default stage used. Default is dev
   region: ${opt:region, 'eu-central-1'} # Overwrite the default region used. Default is us-east-1
   versionFunctions: false # optional, default is true
+  endpointType: regional
   
 package:
   artifact: build/function.zip
