@@ -8,7 +8,7 @@ provider:
   region: ${opt:region, 'eu-central-1'} # Overwrite the default region used. Default is us-east-1
   versionFunctions: false # optional, default is true
   endpointType: regional
-  
+
 package:
   artifact: build/function.zip
 
@@ -17,7 +17,8 @@ functions:
     # runtime: provided for GraalVM or java11 for JVM
 
     # runtime: java11
-    # handler: io.quarkus.amazon.lambda.runtime.QuarkusStreamHandler
+    
+    handler: io.quarkus.amazon.lambda.runtime.QuarkusStreamHandler
     
     runtime: provided
     environment:
