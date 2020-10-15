@@ -22,7 +22,7 @@ public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGateway
 
         // construct the headers and payload
         var headers = headers();
-        var payload = payload();
+        var payload = payload(input);
 
         return APIGatewayV2HTTPResponse.builder()
                     .withStatusCode(200)
@@ -46,9 +46,10 @@ public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGateway
         return headers;
     }
 
-    Map<String, Object> payload() {
+    Map<String, Object> payload(APIGatewayV2HTTPEvent input) {
         Map<String, Object> payload = new HashMap<>();
         payload.put("message", "Hello Serverless Java HTTP.");
+        payload.put("input", input);
         payload.put("currentTimeMillis", System.currentTimeMillis());
         return payload;
     }
